@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Both edges of the engines range declared in package.json.
+        node: ['22.19.0', '24.x']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      # No dependencies and no build step: the checks run straight from the
+      # checkout with the Node already on the runner.
+      - name: Smoke test
+        run: node test/smoke.mjs
+
+      - name: Packaging and metadata checks
+        run: node test/package.mjs
+
+      - name: Tarball file list
+        run: npm run pack:check

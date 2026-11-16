@@ -1,0 +1,65 @@
+# Publishes a GitHub Release with the prebuilt tarball when a `v*` tag is pushed.
+#
+#   git tag v1.27.0 && git push origin v1.27.0
+#
+# The release is what storefronts and the README point at:
+#   .../releases/latest/download/dsh-quick-chat.tgz
+# The version-less alias is uploaded next to the pinned tarball, so that URL keeps
+# working across releases. No extra secret is needed — the runner's own token is
+# enough, because nothing is published outside this repository.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to (re)publish, e.g. v1.27.0
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.19.0'
+
+      - name: Check the tag matches package.json
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$version" ]; then
+            echo "::error::tag $tag does not match package.json version $version"
+            exit 1
+          fi
+
+      - name: Smoke and packaging checks
+        run: npm test
+
+      - name: Build the tarball
+        run: node tools/pack.mjs
+
+      - name: Release notes from CHANGELOG
+        run: node tools/release-notes.mjs > dist/RELEASE-NOTES.md
+
+      - name: Publish the Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          assets=(dist/*.tgz dist/SHA256SUMS.txt)
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "${assets[@]}" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
+              --title "$GITHUB_REF_NAME" \
+              --notes-file dist/RELEASE-NOTES.md
+          fi

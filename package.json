@@ -1,0 +1,86 @@
+{
+  "name": "dsh-quick-chat",
+  "version": "1.27.0",
+  "description": "Puts one avatar per vendor in the DeepSeek Harness conversation header and slides that vendor's own web chat in from the right, with the conversation making room for it.",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json",
+    "./icon": "./icon.png",
+    "./locale/*.json": "./locale/*.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "docs/DETAIL.md",
+    "docs/DETAIL.zh.md",
+    "docs/preview.svg",
+    "icon.png",
+    "screenshots.json",
+    "README.md",
+    "README.en.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lrhero/dsh-quick-chat.git"
+  },
+  "homepage": "https://github.com/lrhero/dsh-quick-chat#readme",
+  "bugs": {
+    "url": "https://github.com/lrhero/dsh-quick-chat/issues"
+  },
+  "author": {
+    "name": "lrhero",
+    "url": "https://github.com/lrhero"
+  },
+  "scripts": {
+    "test": "node test/smoke.mjs && node test/package.mjs",
+    "pack:check": "node tools/pack.mjs --dry-run",
+    "pack": "node tools/pack.mjs",
+    "icons": "node tools/embed-icons.mjs",
+    "voice": "node tools/embed-voice.mjs",
+    "coin": "node tools/embed-coin.mjs"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "dsh-client-plugin",
+    "cordis",
+    "quick-chat",
+    "deepseek",
+    "doubao",
+    "gemini",
+    "webview",
+    "panel",
+    "drawer",
+    "desktop"
+  ],
+  "license": "MIT",
+  "icon": "icon.png",
+  "engines": {
+    "node": "^22.19.0 || >=24.9.0",
+    "dsh": ">=0.2.2-0 <0.3.0"
+  },
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "capabilities": [],
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-sidebar-right"
+      ]
+    }
+  }
+}

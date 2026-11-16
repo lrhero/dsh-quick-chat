@@ -1,0 +1,14 @@
+# Submission file for https://github.com/awesome-dsh-plugin/awesome-dsh-plugin
+#
+# The list is generated from one YAML per plugin. To list dsh-quick-chat, copy
+# this file to `data/plugins/lrhero__dsh-quick-chat.yml` in that repository and
+# open a pull request that adds only that file. The site and the dsh-market
+# storefront pick it up from there, usually within a day. See docs/PUBLISHING.md.
+url: https://github.com/lrhero/dsh-quick-chat
+name: lrhero/dsh-quick-chat
+category: ui
+description:
+  en: "Puts one avatar per vendor in the conversation header (DeepSeek, Doubao, Gemini). Clicking an avatar slides that vendor's own web chat in from the right while the conversation narrows to make room, so sign-in, history, file upload and voice input all keep working; two icon sets, five colour schemes, one click sound per vendor, draggable width, no telemetry and no second composer."
+  zh: "在会话头部放一排厂家头像（DeepSeek / 豆包 / Gemini），点一下就从右侧滑出该厂家自己的网页版聊天，主界面同时收窄让位；登录态、历史会话、文件上传和语音输入都照常工作。两套图标、五种配色、每家一段点击音效、抽屉宽度可拖拽，不收集数据，也不插入第二个输入框。"
+icon: https://raw.githubusercontent.com/lrhero/dsh-quick-chat/main/icon.png
+tarball: https://github.com/lrhero/dsh-quick-chat/releases/latest/download/dsh-quick-chat.tgz

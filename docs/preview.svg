@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="300" viewBox="0 0 640 300" role="img" aria-labelledby="t">
+  <title id="t">A row of vendor avatars in the conversation header, and the vendor's own web chat sliding in from the right while the conversation makes room</title>
+
+  <!-- conversation window -->
+  <rect x="32" y="40" width="420" height="220" rx="14" fill="rgba(128,136,150,0.10)" stroke="#8b93a1" stroke-width="2"/>
+
+  <!-- header band -->
+  <path d="M32 54a14 14 0 0 1 14-14h392a14 14 0 0 1 14 14v26H32z" fill="rgba(128,136,150,0.18)"/>
+  <line x1="33" y1="80" x2="451" y2="80" stroke="#8b93a1" stroke-width="1.5" opacity="0.55"/>
+
+  <!-- title placeholder -->
+  <rect x="52" y="46" width="96" height="12" rx="6" fill="#8b93a1" opacity="0.55"/>
+
+  <!-- three vendor avatars, the first one active -->
+  <circle cx="338" cy="53" r="12" fill="#4d6bfe"/>
+  <path d="M331 56c3-1 4-5 7-5s4 3 8 2" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="370" cy="53" r="12" fill="none" stroke="#4d6bfe" stroke-width="2.5"/>
+  <path d="M365 56h10M368 51h4" stroke="#4d6bfe" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="402" cy="53" r="12" fill="none" stroke="#8b93a1" stroke-width="2.5"/>
+  <path d="M402 47l1.8 3.4 3.7.5-2.7 2.6.6 3.7-3.4-1.7-3.4 1.7.6-3.7-2.7-2.6 3.7-.5z" fill="#8b93a1"/>
+
+  <!-- corner control -->
+  <rect x="424" y="45" width="16" height="16" rx="5" fill="rgba(128,136,150,0.35)"/>
+
+  <!-- conversation body, already narrowed to leave room for the drawer -->
+  <rect x="56" y="102" width="250" height="14" rx="7" fill="#8b93a1" opacity="0.42"/>
+  <rect x="56" y="128" width="196" height="14" rx="7" fill="#8b93a1" opacity="0.30"/>
+  <rect x="56" y="170" width="286" height="62" rx="12" fill="rgba(128,136,150,0.20)" stroke="#8b93a1" stroke-width="1.5" opacity="0.9"/>
+  <rect x="70" y="188" width="150" height="10" rx="5" fill="#8b93a1" opacity="0.45"/>
+  <rect x="70" y="206" width="110" height="10" rx="5" fill="#8b93a1" opacity="0.30"/>
+
+  <!-- the measured gap the drawer occupies -->
+  <path d="M392 40v220" stroke="#8b93a1" stroke-width="1.5" stroke-dasharray="6 8" opacity="0.45"/>
+
+  <!-- motion ghost of the drawer -->
+  <rect x="452" y="52" width="140" height="196" rx="14" fill="#4d6bfe" opacity="0.10"/>
+
+  <!-- the drawer: the vendor's own page -->
+  <rect x="440" y="40" width="152" height="220" rx="14" fill="rgba(128,136,150,0.22)" stroke="#8b93a1" stroke-width="2"/>
+  <path d="M440 54a14 14 0 0 1 14-14h124a14 14 0 0 1 14 14v26H440z" fill="rgba(128,136,150,0.16)"/>
+  <line x1="441" y1="80" x2="591" y2="80" stroke="#8b93a1" stroke-width="1.5" opacity="0.55"/>
+
+  <!-- vendor pills in the drawer bar -->
+  <rect x="452" y="46" width="34" height="14" rx="7" fill="#4d6bfe"/>
+  <rect x="492" y="46" width="34" height="14" rx="7" fill="#8b93a1" opacity="0.45"/>
+  <rect x="532" y="46" width="34" height="14" rx="7" fill="#8b93a1" opacity="0.30"/>
+
+  <!-- the vendor page inside the drawer -->
+  <rect x="454" y="94" width="124" height="150" rx="10" fill="rgba(128,136,150,0.14)" stroke="#8b93a1" stroke-width="1.5" opacity="0.85"/>
+  <rect x="468" y="110" width="76" height="10" rx="5" fill="#8b93a1" opacity="0.45"/>
+  <rect x="468" y="130" width="96" height="10" rx="5" fill="#8b93a1" opacity="0.30"/>
+  <rect x="468" y="160" width="66" height="10" rx="5" fill="#4d6bfe" opacity="0.55"/>
+  <rect x="468" y="212" width="96" height="18" rx="9" fill="#4d6bfe" opacity="0.75"/>
+
+  <!-- slide direction -->
+  <path d="M418 150h12M424 144l6 6-6 6" fill="none" stroke="#4d6bfe" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
