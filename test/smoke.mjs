@@ -604,6 +604,32 @@ console.log('smoke ok: iconColor=blue paints the glyphs blue');
         throw new Error(`深色头部上应保留白色图标，实际 ${String(darkFill)}`);
     }
     console.log('smoke ok: white glyphs stay white on a dark header');
+
+    // 黑 / 蓝是用户明确挑的：深色底上选黑色必须还是黑色，
+    // 不能被兜底翻成白色——否则它和白色那一档看起来一模一样。
+    storage.clear();
+    seats.length = 0;
+    slots.length = 0;
+    plugin.apply(ctxStub, {
+        iconStyle: 'proper',
+        iconColor: 'black',
+        sources: [{ id: 'deepseek', label: 'DeepSeek', url: 'https://chat.deepseek.com/', icon: 'deepseek' }],
+    });
+    const blackSeat = seats.find((s) => s.definition.name === 'conversation.session.header.utilities');
+    const blackProps = blackSeat.definition.inject();
+    const blackElement = blackSeat.Component({ ...blackProps });
+    const BlackComponent = blackElement.type;
+    surface = 'rgb(21, 21, 23)';
+    cursor = 0;
+    effects.length = 0;
+    states.length = 0;
+    BlackComponent(blackElement.props);
+    for (const fn of effects) if (typeof fn === 'function') fn();
+    const blackFill = glyphFill(BlackComponent(blackElement.props));
+    if (blackFill !== '#111317') {
+        throw new Error(`深色底上选黑色图标应保持黑色，实际 ${String(blackFill)}`);
+    }
+    console.log('smoke ok: an explicit black stays black on a dark header');
 }
 
 // --- 打开抽屉时主界面要让位 ------------------------------------------------

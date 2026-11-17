@@ -150,6 +150,7 @@ window.__ModuleLoader__.load({
         style: '切换图标样式',
         tintTitle: (label) => `图标颜色：${label}（点击切换）`,
         tint: '切换图标颜色',
+        tintDim: '（这个底色下几乎看不见）',
         voiceOff: '点击音效：已关闭，点一下打开',
         voiceOn: '点击音效：已开启，点一下关闭',
         voice: '开关点击音效',
@@ -170,6 +171,7 @@ window.__ModuleLoader__.load({
         style: 'Switch icon style',
         tintTitle: (label) => `Icon colour: ${label} (click to cycle)`,
         tint: 'Switch icon colour',
+        tintDim: ' (nearly invisible on this background)',
         voiceOff: 'Click sound: off — click to enable',
         voiceOn: 'Click sound: on — click to mute',
         voice: 'Toggle click sound',
@@ -295,13 +297,16 @@ window.__ModuleLoader__.load({
       return Math.max(0, Math.round(width - reserved));
     }
 
-    function useAdaptiveInk(ink, variant, externalRef) {
+    function useAdaptiveInk(ink, tint, variant, externalRef) {
       const localRef = React.useRef(null);
       const ref = externalRef ?? localRef;
       const [value, setValue] = React.useState(ink);
       React.useEffect(() => {
         const node = ref.current;
-        if (node === null || variant === 'fun' || typeof ink !== 'string') {
+        // 只有「白色」参与兜底：白是历史默认值，落到浅色头部上会隐形。
+        // 黑 / 蓝 / 渐变是用户明确挑的，必须保持原样——否则黑底上选黑色会被
+        // 翻成白色，和白色那一档完全一样，选择器就失去意义了。
+        if (node === null || variant === 'fun' || tint !== 'white' || typeof ink !== 'string') {
           setValue(ink);
           return undefined;
         }
@@ -939,10 +944,10 @@ window.__ModuleLoader__.load({
 
     // --- header icons ------------------------------------------------------
     function SourceButtons(props) {
-      const { sources, state, onPick, variant, ink, lockedInk } = props;
+      const { sources, state, onPick, variant, ink, tint, lockedInk } = props;
       // 图标颜色按实底自适应：白色落在浅色头部上时自动换成深色。
       // 守卫补位那组底片是固定深色，所以锁死白色，不参与自适应。
-      const [groupRef, paintedInk] = useAdaptiveInk(ink, variant);
+      const [groupRef, paintedInk] = useAdaptiveInk(ink, tint ?? 'white', variant);
       const finalInk = lockedInk === true ? ink : paintedInk;
       return h(
         React.Fragment,
@@ -995,7 +1000,7 @@ window.__ModuleLoader__.load({
       const hostsRef = React.useRef(new Map()); // id -> container element
       const asideRef = React.useRef(null);
       // 抽屉底色同样会被主题/皮肤换掉，厂家图标跟着翻色
-      const [, paintedInk] = useAdaptiveInk(ink, variant, asideRef);
+      const [, paintedInk] = useAdaptiveInk(ink, tint, variant, asideRef);
       const [topPx, setTopPx] = React.useState(56);
       const [, setTick] = React.useState(0);
       const bump = () => setTick((n) => n + 1);
@@ -1357,7 +1362,7 @@ window.__ModuleLoader__.load({
             h('button', {
               type: 'button',
               className: 'dshqc-tint',
-              title: `${TEXT.tintTitle(TINT_LABEL[tint])}`,
+              title: `${TEXT.tintTitle(TINT_LABEL[tint])}${tint === 'black' && isDark ? TEXT.tintDim : ''}`,
               'aria-label': TEXT.tint,
               'data-tint': tint,
               style: { background: tintSwatch(tint) },
@@ -1691,7 +1696,7 @@ window.__ModuleLoader__.load({
           React.useEffect(() => {
             if (typeof props.report === 'function') props.report({ event: 'header-mount' });
           }, []);
-          return h(SourceButtons, { sources: props.sources, state, onPick: pickSite, variant: style, ink });
+          return h(SourceButtons, { sources: props.sources, state, onPick: pickSite, variant: style, ink, tint: normalizeTint(state.iconColor) ?? 'blue' });
         };
 
         // 先装守卫：即使头部席位注册失败或宿主不渲染它，按钮也还有地方落

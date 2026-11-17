@@ -31,7 +31,7 @@ The main process's `will-attach-webview` only validates the lease owner and the 
 | **Coin switch** | A silver coin: crown side = vector glyphs, lightning side = illustrated avatars, click to flip |
 | **Click sounds** | One clip per vendor, played on open; a speaker button mutes them |
 | **Self-healing icons** | If the host remounts or hides the header seat, a guard notices within ~2s and re-hosts the buttons at the header's right edge |
-| **Contrast-aware ink** | The glyph colour is measured against the real background; white on a light header flips to dark instead of disappearing |
+| **Contrast-aware ink** | Only *white* adapts: on a light header it flips to dark instead of disappearing. Black, blue and the gradient stay exactly as picked |
 | **UI in Chinese or English** | Labels follow the system language: `zh*` gets Chinese, everything else English |
 | **No environment warning** | The self-created webview uses a desktop Chrome UA |
 
@@ -100,7 +100,7 @@ The bundle's own `cordis.patch.yml` already inserts the default row (three vendo
 | `sources[].surface` | `webview` | `tab` hands the page to the host's own browser tab |
 | `sources[].userAgent` | desktop Chrome | `chrome` / `electron` / a full UA string |
 | `iconStyle` | `proper` | `proper` = vector glyphs; `fun` = illustrated avatars (with sounds) |
-| `iconColor` | `blue` | `blue` (the first-install default) / `white` / `black` / `auto` (follow theme) / `grad`; the rendered ink falls back to a contrasting colour when needed |
+| `iconColor` | `blue` | `blue` (the first-install default) / `white` / `black` / `auto` (follow theme) / `grad`. Only `white` is contrast-corrected; `black` is nearly invisible on a dark header (use `auto` to follow the theme) |
 | `voiceVolume` | `0.7` | Click-sound volume, 0–1 |
 | `voiceEnabled` | `true` | Play click sounds; the speaker button in the drawer overrides it locally |
 | `voices` | empty | Per-id sound overrides as data URI or http(s) URL |
