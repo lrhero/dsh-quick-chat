@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Quick Chat",
-    "description": "Puts one avatar per vendor in the conversation header (DeepSeek, Doubao, Gemini); clicking one slides that vendor's own web chat in from the right and the conversation makes room for it. The drawer is the site's real page, so sign-in, history, upload and voice input keep working. Two icon sets (vector glyphs or illustrated avatars), five colour schemes, one click sound per vendor, draggable width. No data is collected. Limits: sign-in does not survive a restart, and Google sign-in (Gemini by default) only works in the system browser.",
+    "description": "Puts one avatar per vendor in the conversation header (DeepSeek, Doubao, Gemini); clicking one slides that vendor's own web chat in from the right and the conversation makes room for it. The drawer is the site's real page, so sign-in, history, upload and voice input keep working. Two icon sets (vector glyphs or illustrated avatars), four colour options (gradient by default, narrowed to what the background can show), one click sound per vendor, draggable width. No data is collected. Limits: sign-in does not survive a restart, and Google sign-in (Gemini by default) only works in the system browser.",
     "detail": "docs/DETAIL.md"
   }
 }

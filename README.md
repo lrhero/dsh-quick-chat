@@ -262,7 +262,7 @@ dsh-quick-chat/
 - 离线自检（不需要 DSH、不需要网络）：
 
 ```powershell
-npm test                 # 23 项功能断言 + 11 项打包/元数据断言
+npm test                 # 25 项功能断言 + 11 项打包/元数据断言
 npm run pack:check       # 只看 tarball 里到底会装进去哪些文件
 ```
 

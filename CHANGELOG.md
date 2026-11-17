@@ -24,9 +24,12 @@
 - **移除非标准的 `dshWorkshop` 段**：那是另一个市场私有的清单格式，`evidence` 全为 `null`，留着只会让别的市场读到一堆没验证过的声明。
 - **安装章节只留两条路**：删掉「装成本地插件目录」与「设置 → 插件 → 添加本地插件」两段手装流程，以及卸载里对应的手动清理说明——预构建包、仓库、插件市场三条已经覆盖所有情况。
 - **署名改为 `lrhero`**：README 许可行、`LICENSE`、`package.json` 的 `author` 不再写真实姓名与邮箱。
-- **示意图改用 A / B 命名**：`docs/bar.png` 左侧标签 `正经版` / `整活版` → `A 版` / `B 版`，右侧按钮 `整活` / `正经` → `切换`（B 行蓝色、A 行黑色）；README 正文与 `cordis.patch.yml` 注释同步改用 A 版 / B 版，配置值仍是 `proper` / `fun`。
+- **示意图改用 A / B 命名**：`docs/bar.png` 左侧标签 `正经版` / `整活版` → `A 版` / `B 版`，README 正文与 `cordis.patch.yml` 注释同步改用 A 版 / B 版，配置值仍是 `proper` / `fun`。
 - **首图重画成真实工具栏**：`docs/bar.png` 删掉那个并不存在的「切换」文字按钮和自造的 `chat.deepseek.com` 地址，改成插件真正的控件——硬币（A 版冠面 / B 版带电面）+ 配色点（A 版）/ 喇叭（B 版）+ 分隔线 + ↗ ⟳ ×；底部说明随之改成「橙圈 = 硬币开关」。
 - **首次安装默认图标颜色改为渐变（蓝→青）**：原来代码与参考配置的默认都是 `white`，只在对比度低于 2.2 时才自动翻成深色 / 白色（`contrastInk`），并没有「首次安装按系统背景选黑 / 白」这条规则。现在没有配置也没有本地记忆时用 `grad`；`white` / `black` / `blue` / `auto` 仍可通过配置或抽屉里的色点切换。
+- **`docs/icon-sets.png` 同步改名**：`A · 正经版` → `A · 矢量图标`，`B · 整活版` → `B · 插画头像`，与正文的 A 版 / B 版对齐。
+- **市场截图去掉过期的那张**：`drawer-width.png` 是旧版顶栏（右侧还有一个文字项），已从 `screenshots.json` 移除，现在只展示 `bar` / `icon-sets` / `coin` 三张。
+- **描述里的配色数量校正**：`locale` 中英与市场条目原来写「五种配色 / five colour schemes」，实际是随底色收敛的四种（默认渐变），已改。
 - **README 补 403 排查**：已知限制写清「guest 跟随系统代理」，排查一节给出直连 / 走代理两条 `curl` 命令和一张判定表。
 
 ### 修复
@@ -37,7 +40,7 @@
 
 ### 验证
 
-- `node test/smoke.mjs` → 23 项断言全绿
+- `node test/smoke.mjs` → 25 项断言全绿
 - `node test/package.mjs` → 11 项断言全绿
 - `node tools/pack.mjs --dry-run` → tarball 文件清单正确
 
