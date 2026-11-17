@@ -27,11 +27,11 @@ The main process's `will-attach-webview` only validates the lease owner and the 
 | **The main UI makes room** | The conversation actually narrows instead of being covered; drag the drawer's left edge and it follows |
 | **Draggable width** | 360px up to window width − 90px, remembered locally |
 | **Two icon sets** | Vector glyphs, or illustrated avatars |
-| **Five colour schemes** | Blue (default) / white / black / follow theme / blue→cyan gradient |
+| **Colours that fit the background** | Blue (default) / white / black / follow theme / blue→cyan gradient; white is hidden on a light background and black on a dark one, so it is really four options |
 | **Coin switch** | A silver coin: crown side = vector glyphs, lightning side = illustrated avatars, click to flip |
 | **Click sounds** | One clip per vendor, played on open; a speaker button mutes them |
 | **Self-healing icons** | If the host remounts or hides the header seat, a guard notices within ~2s and re-hosts the buttons at the header's right edge |
-| **Contrast-aware ink** | Only *white* adapts: on a light header it flips to dark instead of disappearing. Black, blue and the gradient stay exactly as picked |
+| **Contrast-aware ink** | The picker only offers colours you can see — white is dropped on a light background, black on a dark one. White also has a fallback for skins that paint the header light |
 | **UI in Chinese or English** | Labels follow the system language: `zh*` gets Chinese, everything else English |
 | **No environment warning** | The self-created webview uses a desktop Chrome UA |
 
@@ -100,7 +100,7 @@ The bundle's own `cordis.patch.yml` already inserts the default row (three vendo
 | `sources[].surface` | `webview` | `tab` hands the page to the host's own browser tab |
 | `sources[].userAgent` | desktop Chrome | `chrome` / `electron` / a full UA string |
 | `iconStyle` | `proper` | `proper` = vector glyphs; `fun` = illustrated avatars (with sounds) |
-| `iconColor` | `blue` | `blue` (the first-install default) / `white` / `black` / `auto` (follow theme) / `grad`. Only `white` is contrast-corrected; `black` is nearly invisible on a dark header (use `auto` to follow the theme) |
+| `iconColor` | `blue` | `blue` (the first-install default) / `white` / `black` / `auto` (follow theme) / `grad`. White is not offered on a light background and black is not offered on a dark one (a config value for them falls back to `blue`); white keeps its contrast fallback |
 | `voiceVolume` | `0.7` | Click-sound volume, 0–1 |
 | `voiceEnabled` | `true` | Play click sounds; the speaker button in the drawer overrides it locally |
 | `voices` | empty | Per-id sound overrides as data URI or http(s) URL |

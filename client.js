@@ -203,9 +203,16 @@ window.__ModuleLoader__.load({
       return INK[tint] ?? INK.white;
     }
 
-    function nextTint(current) {
-      const index = TINTS.indexOf(current);
-      return TINTS[(index + 1) % TINTS.length];
+    // 选项随底色收敛：浅色底上的白色、深色底上的黑色都等于隐形，
+    // 所以这两档不进选择链——少一个看着没差别的选项，也就没有「选了却被改色」。
+    function availableTints(isDark) {
+      return TINTS.filter((tint) => (tint === 'white' ? isDark : tint === 'black' ? !isDark : true));
+    }
+
+    function nextTint(current, isDark) {
+      const list = availableTints(isDark);
+      const index = list.indexOf(current);
+      return list[(index + 1) % list.length];
     }
 
     function tintSwatch(tint) {
@@ -217,8 +224,12 @@ window.__ModuleLoader__.load({
     const TINT_LABEL = TEXT.tintLabel;
 
     // DSH 在 body 上挂 data-ds-dark-theme；监听它的增删来跟随主题，而不是只在挂载时取一次。
+    function bodyIsDark() {
+      return document.body?.hasAttribute('data-ds-dark-theme') === true;
+    }
+
     function useIsDark() {
-      const read = () => document.body?.hasAttribute('data-ds-dark-theme') === true;
+      const read = bodyIsDark;
       const [dark, setDark] = React.useState(read);
       React.useEffect(() => {
         const body = document.body;
@@ -1362,11 +1373,11 @@ window.__ModuleLoader__.load({
             h('button', {
               type: 'button',
               className: 'dshqc-tint',
-              title: `${TEXT.tintTitle(TINT_LABEL[tint])}${tint === 'black' && isDark ? TEXT.tintDim : ''}`,
+              title: `${TEXT.tintTitle(TINT_LABEL[tint])}${availableTints(isDark).includes(tint) ? '' : TEXT.tintDim}`,
               'aria-label': TEXT.tint,
               'data-tint': tint,
               style: { background: tintSwatch(tint) },
-              onClick: () => setTint(nextTint(tint)),
+              onClick: () => setTint(nextTint(tint, isDark)),
             }),
             // 音效属于整活版，正经版不显示喇叭
             variant === 'fun' &&
@@ -1497,7 +1508,7 @@ window.__ModuleLoader__.load({
       // 整个插件会静默地不激活（按钮、抽屉全都没有），排查时毫无线索。
       inject: ['slots'],
       // 仅供离线自检调用，宿主不会读这两个字段
-      internals: { pushMarginFor, contrastInk, parseColor, isCloudFrontBlock, lang: LANG, text: TEXT },
+      internals: { pushMarginFor, contrastInk, parseColor, isCloudFrontBlock, availableTints, nextTint, lang: LANG, text: TEXT },
       apply(ctx, config) {
         // 诊断：apply 到底有没有跑到、哪些席位注册成功。只写一条很小的记录，
         // 下次再出现「整排图标消失」，一眼能分清是插件没加载还是宿主没渲染。
@@ -1593,7 +1604,10 @@ window.__ModuleLoader__.load({
         const configuredStyle = config?.iconStyle === 'fun' ? 'fun' : 'proper';
         const configuredTint = normalizeTint(config?.iconColor) ?? 'blue';
         const initialStyle = readStoredStyle() ?? configuredStyle;
-        const initialTint = readStoredTint() ?? configuredTint;
+        // 当前底色下不提供的那一档（浅底的白 / 深底的黑）不进选择链；
+        // 存在本地或写进配置的旧值如果正好是它，就退回默认蓝，避免一进来就隐形。
+        const usableTint = (value) => (availableTints(bodyIsDark()).includes(value) ? value : null);
+        const initialTint = usableTint(readStoredTint()) ?? usableTint(configuredTint) ?? 'blue';
         const rawVolume = Number(config?.voiceVolume);
         const volume = Number.isFinite(rawVolume) ? Math.min(1, Math.max(0, rawVolume)) : 0.7;
         const playVoice = makeVoicePlayer(normalizeVoices(config), volume);

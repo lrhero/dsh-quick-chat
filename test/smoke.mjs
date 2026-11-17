@@ -531,105 +531,65 @@ console.log('smoke ok: iconColor=blue paints the glyphs blue');
     console.log('smoke ok: guard retracts once the header seat is back');
 }
 
-// --- 图标颜色自适应：白色墨色落到浅色头部上必须翻成深色 --------------------
-// 白字 + #EDF2FA 头部 = 1.12:1，等于隐形；这正是「三个图标看不见」的一种形态。
+// --- 图标颜色：选项随底色收敛，白色保留对比度兜底 --------------------------
+// 浅色底不提供白色（白字 + #EDF2FA 头部 = 1.12:1，等于隐形），深色底不提供黑色；
+// 其余颜色按用户所选原样绘制，只有白色在量到浅底时会被翻成深色（皮肤可能把
+// 深色主题的头部刷成浅色，这条兜底就是给那种情况留的）。
 {
     const ctxStub = {
         slots: { inject: (_n, run) => run(), register: (d, C) => (seats.push({ definition: d, Component: C }), () => {}) },
         sidebarRight: { openTab: () => {} },
     };
-    storage.clear();
-    seats.length = 0;
-    slots.length = 0;
-    plugin.apply(ctxStub, {
-        iconStyle: 'proper',
-        iconColor: 'white',
-        sources: [{ id: 'deepseek', label: 'DeepSeek', url: 'https://chat.deepseek.com/', icon: 'deepseek' }],
-    });
-    const seatHeader = seats.find((s) => s.definition.name === 'conversation.session.header.utilities');
-    if (!seatHeader) throw new Error('缺 header 席位');
-    const baseProps = seatHeader.definition.inject();
-    const element = seatHeader.Component({ ...baseProps }); // HeaderButtons → h(SourceButtons, …)
-    const Component = element.type;
-
-    let surface = 'rgb(237, 242, 250)'; // 浅色头部
-    const node = { parentElement: null };
-    const states = [];
-    const effects = [];
-    let cursor = 0;
-    React.useRef = (initial) => ({ current: initial === null ? node : initial });
-    React.useState = (initial) => {
-        const slot = cursor++;
-        if (!(slot in states)) states[slot] = initial;
-        return [
-            states[slot],
-            (next) => {
-                states[slot] = typeof next === 'function' ? next(states[slot]) : next;
-            },
-        ];
-    };
-    React.useEffect = (fn) => {
-        effects[cursor++] = fn;
-    };
-    sandbox.window.getComputedStyle = () => ({ backgroundColor: surface });
-    sandbox.window.addEventListener = () => {};
-    sandbox.window.removeEventListener = () => {};
-
-    const run = () => {
-        cursor = 0;
-        return Component(element.props);
-    };
-    const glyphFill = (tree) => {
-        const svg = deepFind(render(tree), (n) => n?.props?.className === 'dshqc-glyph');
-        return deepFind(svg, (n) => n?.type === 'path')?.props?.fill ?? null;
+    const headerFor = (iconColor) => {
+        storage.clear();
+        seats.length = 0;
+        slots.length = 0;
+        plugin.apply(ctxStub, {
+            iconStyle: 'proper',
+            iconColor,
+            sources: [{ id: 'deepseek', label: 'DeepSeek', url: 'https://chat.deepseek.com/', icon: 'deepseek' }],
+        });
+        const seat = seats.find((s) => s.definition.name === 'conversation.session.header.utilities');
+        if (!seat) throw new Error('缺 header 席位');
+        return seat.definition.inject();
     };
 
-    const first = run();
-    for (const fn of effects) if (typeof fn === 'function') fn();
-    const lightFill = glyphFill(run());
-    if (lightFill !== '#111317') {
-        throw new Error(`浅色头部上应把白色图标翻成深色，实际 ${String(lightFill)}（首轮 ${JSON.stringify(first?.type?.name)})`);
+    // 浅色主题（body 上没有 data-ds-dark-theme）：配置里的 white 这一档不存在，退回默认蓝
+    const whiteOnLight = headerFor('white');
+    if (whiteOnLight.store.get().iconColor !== 'blue') {
+        throw new Error(`浅色主题下 white 应退回 blue，实际 ${whiteOnLight.store.get().iconColor}`);
     }
-    console.log('smoke ok: white glyphs flip to dark on a light header');
+    console.log('smoke ok: white is not offered on a light theme, the config falls back to blue');
 
-    // 深色头部：白色本来就清楚，不能被翻掉
-    surface = 'rgb(21, 21, 23)';
-    cursor = 0;
-    effects.length = 0;
-    states.length = 0;
-    run();
-    for (const fn of effects) if (typeof fn === 'function') fn();
-    const darkFill = glyphFill(run());
-    if (darkFill !== '#ffffff') {
-        throw new Error(`深色头部上应保留白色图标，实际 ${String(darkFill)}`);
+    // 纯函数：白色的对比度兜底仍然在
+    const { contrastInk } = plugin.internals;
+    if (contrastInk('#ffffff', { r: 237, g: 242, b: 250, a: 1 }) !== '#111317') {
+        throw new Error('白色落在浅色底上应翻成深色');
     }
-    console.log('smoke ok: white glyphs stay white on a dark header');
+    if (contrastInk('#ffffff', { r: 21, g: 21, b: 23, a: 1 }) !== '#ffffff') {
+        throw new Error('白色落在深色底上应保留');
+    }
+    if (contrastInk('#2f6bff', { r: 237, g: 242, b: 250, a: 1 }) !== '#2f6bff') {
+        throw new Error('蓝色不该被兜底改色');
+    }
+    if (contrastInk('url(#dshqc-ink-grad)', { r: 21, g: 21, b: 23, a: 1 }) !== 'url(#dshqc-ink-grad)') {
+        throw new Error('渐变不该被兜底改色');
+    }
+    console.log('smoke ok: contrast fallback still guards white, and leaves blue / gradient alone');
 
-    // 黑 / 蓝是用户明确挑的：深色底上选黑色必须还是黑色，
-    // 不能被兜底翻成白色——否则它和白色那一档看起来一模一样。
-    storage.clear();
-    seats.length = 0;
-    slots.length = 0;
-    plugin.apply(ctxStub, {
-        iconStyle: 'proper',
-        iconColor: 'black',
-        sources: [{ id: 'deepseek', label: 'DeepSeek', url: 'https://chat.deepseek.com/', icon: 'deepseek' }],
-    });
+    // 浅色主题下黑色是合法选项，画出来就是黑色
+    const blackOnLight = headerFor('black');
+    if (blackOnLight.store.get().iconColor !== 'black') {
+        throw new Error(`浅色主题下 black 应保留，实际 ${blackOnLight.store.get().iconColor}`);
+    }
     const blackSeat = seats.find((s) => s.definition.name === 'conversation.session.header.utilities');
-    const blackProps = blackSeat.definition.inject();
-    const blackElement = blackSeat.Component({ ...blackProps });
-    const BlackComponent = blackElement.type;
-    surface = 'rgb(21, 21, 23)';
-    cursor = 0;
-    effects.length = 0;
-    states.length = 0;
-    BlackComponent(blackElement.props);
-    for (const fn of effects) if (typeof fn === 'function') fn();
-    const blackFill = glyphFill(BlackComponent(blackElement.props));
+    const blackElement = blackSeat.Component({ ...blackSeat.definition.inject() });
+    const blackSvg = deepFind(render(blackElement), (n) => n?.props?.className === 'dshqc-glyph');
+    const blackFill = deepFind(blackSvg, (n) => n?.type === 'path')?.props?.fill ?? null;
     if (blackFill !== '#111317') {
-        throw new Error(`深色底上选黑色图标应保持黑色，实际 ${String(blackFill)}`);
+        throw new Error(`黑色档应画成 #111317，实际 ${String(blackFill)}`);
     }
-    console.log('smoke ok: an explicit black stays black on a dark header');
+    console.log('smoke ok: black stays black wherever it is offered');
 }
 
 // --- 打开抽屉时主界面要让位 ------------------------------------------------
@@ -668,6 +628,27 @@ console.log('smoke ok: iconColor=blue paints the glyphs blue');
     }
     if (plugin.internals.text.blocked.includes('403') === false) throw new Error('中文提示里应说明 403');
     console.log('smoke ok: CloudFront 403 pages are recognised, ordinary pages are not');
+}
+
+// --- 选项随底色收敛 ---------------------------------------------------------
+// 浅色底不提供白色、深色底不提供黑色：少一个看不见的选项，也就没有「选了被改色」。
+{
+    const { availableTints, nextTint } = plugin.internals;
+    if (typeof availableTints !== 'function' || typeof nextTint !== 'function') {
+        throw new Error('缺 availableTints / nextTint');
+    }
+    const light = availableTints(false);
+    const dark = availableTints(true);
+    if (light.includes('white')) throw new Error(`浅色底不该提供白色，实际 ${light.join(',')}`);
+    if (!light.includes('black')) throw new Error(`浅色底应提供黑色，实际 ${light.join(',')}`);
+    if (dark.includes('black')) throw new Error(`深色底不该提供黑色，实际 ${dark.join(',')}`);
+    if (!dark.includes('white')) throw new Error(`深色底应提供白色，实际 ${dark.join(',')}`);
+    if (light.length !== 4 || dark.length !== 4) throw new Error(`两档底色后应各剩 4 个选项，实际 ${light.length}/${dark.length}`);
+    if (nextTint('blue', false) !== 'black') throw new Error(`浅色底 blue 之后应为 black，实际 ${nextTint('blue', false)}`);
+    if (nextTint('grad', true) !== 'white') throw new Error(`深色底 grad 之后应回到 white，实际 ${nextTint('grad', true)}`);
+    if (nextTint('black', false) !== 'auto') throw new Error(`浅色底 black 之后应为 auto，实际 ${nextTint('black', false)}`);
+    if (nextTint('white', true) !== 'blue') throw new Error(`深色底 white 之后应为 blue，实际 ${nextTint('white', true)}`);
+    console.log('smoke ok: the tint cycle drops whichever option is invisible on this background');
 }
 
 // --- 界面文案跟系统语言走 ---------------------------------------------------
