@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Redraw the right-hand control cluster and the footer caption of docs/bar.png.
+"""Redraw the right-hand control cluster and the footer caption of docs/hero-drawer.png.
 
 The figure used to draw a text button called 切换, which the plugin never had:
 the real drawer toolbar carries a coin (icon-set switch), then either the colour
@@ -19,7 +19,7 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
-TARGET = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "docs" / "bar.png"
+TARGET = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "docs" / "hero-drawer.png"
 FONT_PATH = Path(r"C:\Windows\Fonts\msyhbd.ttc")
 FALLBACK_FONTS = [
     Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"),

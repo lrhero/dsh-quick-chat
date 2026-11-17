@@ -10,7 +10,7 @@ A row of vendor avatars in the DeepSeek Harness conversation header. Click one a
 
 The drawer shows the site exactly as it renders: sign-in state, history, file upload and voice input all work. The plugin adds no composer of its own and no cross-vendor fan-out, so there is never a second chat box fighting the real one.
 
-![Three vendor avatars in the conversation header; clicking one slides the drawer in from the right, with controls for icon style, colour and mute](docs/bar.png)
+![Three vendor avatars in the conversation header; clicking one slides the drawer in from the right, with controls for icon style, colour and mute](docs/hero-drawer.png)
 
 ## Why not the built-in browser tab
 

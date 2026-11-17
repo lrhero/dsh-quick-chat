@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Redraw the four figure labels on docs/bar.png (README hero image).
+"""Redraw the four figure labels on docs/hero-drawer.png (README hero image).
 
   python tools/relabel-figure.py
 
@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
-TARGET = ROOT / "docs" / "bar.png"
+TARGET = ROOT / "docs" / "hero-drawer.png"
 FONT_CANDIDATES = [
     Path(r"C:\Windows\Fonts\msyhbd.ttc"),  # Microsoft YaHei Bold — the screenshot's face
     Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"),
