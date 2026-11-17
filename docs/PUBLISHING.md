@@ -188,7 +188,7 @@ npm view dsh-quick-chat-panel version   # 返回 404 才是没被占
 ## 六、发版前的自检清单
 
 ```powershell
-npm test            # 22 项功能断言 + 11 项打包/元数据断言
+npm test            # 23 项功能断言 + 11 项打包/元数据断言
 npm run pack:check  # tarball 里到底有哪些文件
 ```
 

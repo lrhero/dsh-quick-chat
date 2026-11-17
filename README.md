@@ -164,6 +164,7 @@ node tools/embed-voice.mjs
 
 - **登录不跨重启**：guest 的分区名由主进程随机生成，插件无法指定 `persist:`，应用退出即清空。
 - **Gemini 可能加载不出来**：国内直连不通，只有走系统代理才通；guest 是否走代理取决于宿主，失败时面板会显示错误码。所以默认把 Gemini 配成 `external: true`。
+- **DeepSeek 可能被系统代理挡住（403）**：guest 跟随宿主走系统代理。如果代理的出口 IP 被 DeepSeek 的 CloudFront 拦了，页面会是一张 `403 ERROR / Request blocked`。**直连是通的**，把 `chat.deepseek.com` 加进代理直连规则即可（见下面「排查」）。
 - **Google 登录不能内嵌**：Google 会拦「嵌入在其他应用中」的浏览器，改 UA 也过不去（实测 `userAgent: electron` 仍被拦），只能交给系统浏览器。
 - 每个厂家一个 guest，三家都开时内存占用上升。
 
@@ -209,6 +210,28 @@ location.reload();
 
 `snapshot` 里 `corner: null` 表示当时根本没渲染会话头部（例如停在插件管理页），不是插件的问题。
 
+### 面板里出现 `403 ERROR / Request blocked`
+
+这不是插件拦的，是站点的 CDN（CloudFront）拒绝了这次请求。先分清是谁挡的：
+
+```powershell
+# 直连（绕开系统代理）——正常应返回 200
+curl.exe -s -o NUL -w "%{http_code}`n" https://chat.deepseek.com/
+
+# 走你的系统代理：如果这里返回 403，就是代理的出口 IP 被站点拦了
+curl.exe -s -o NUL -w "%{http_code}`n" -x http://127.0.0.1:7890 https://chat.deepseek.com/
+```
+
+`7890` 换成你代理的端口。结论与做法：
+
+| 直连 | 走代理 | 含义 | 做法 |
+|---|---|---|---|
+| 200 | 403 | 代理出口 IP 被 CloudFront 拦 | 把 `chat.deepseek.com;*.deepseek.com` 加进系统代理的**直连/绕过**列表（代理软件里：`DOMAIN-SUFFIX,deepseek.com,DIRECT`），然后点抽屉里的 ⟳ |
+| 403 | 403 | 本机 IP 或网络被拦 | 换网络/节点，或直接用系统浏览器打开 |
+| 200 | 200 | 不是网络问题 | 先点 ⟳；仍不行看一下 guest 的 UA（按钮 title 里有实际 UA） |
+
+面板识别到这张 CloudFront 页时会自己显示上面这段结论里对应的提示，不用先猜。
+
 ## 隐私
 
 插件本身不收集、不上传任何数据，也没有遥测。它做的只有两件事：在你点某个厂家时创建该站点的 webview（访问的就是你点的那家站点），以及把你在这台机器上选的图标样式/宽度记在 `localStorage`。
@@ -239,7 +262,7 @@ dsh-quick-chat/
 - 离线自检（不需要 DSH、不需要网络）：
 
 ```powershell
-npm test                 # 22 项功能断言 + 11 项打包/元数据断言
+npm test                 # 23 项功能断言 + 11 项打包/元数据断言
 npm run pack:check       # 只看 tarball 里到底会装进去哪些文件
 ```
 

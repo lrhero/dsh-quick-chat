@@ -2,9 +2,12 @@
 
 ## 1.27.0 — 2026-11-16
 
-这一版没有改界面，改的是**发布与上架**：让别人能从 GitHub 话题、插件市场和一条命令装上。
+这一版补齐发布与上架配置，另外修了两件用户会直接撞上的事：被系统代理挡住时只看得到一张 403 错误页，以及首图画着一个插件里根本不存在的「切换」按钮。
 
 ### 新增
+
+- **CloudFront 403 认领**：每次加载结束读回 guest 的标题与正文，认出 CloudFront 的 `Request blocked` 页就在抽屉里直接给出「多半是系统代理的出口 IP 被限」的处理办法（中英双语），不用再对着错误页猜。
+- **`tools/redraw-toolbar.py`**：首图右侧工具栏的重绘脚本——擦掉旧控件、按真实控件重画，路径相对仓库，可重复执行。
 
 - **`test/package.mjs`（11 项打包自检）**：包名 / Loader 行名 / 客户端模块 id 三者一致；`dsh.bundle` 与 `engines.dsh` 在位；`locale` 里 `meta.detail` 指向的文档与配图真的在包里；图标是有效 PNG 且不超 256 KiB；`screenshots.json` 路径合法且不指向仓库外；`files` 既覆盖运行时文件又不夹带 `test/` `tools/` `assets/`；版本号在 `package.json`、`CHANGELOG.md`、README 徽章三处一致；参考配置里的站点地址是 http(s)；上架条目里的 `url` / `name` / 分类 / 图标 / 预构建包地址都对得上。`npm test` 现在同时跑功能与打包两套断言。
 - **`tools/pack.mjs`**：用 `npm pack` 出 Release 附件，附带不带版本号的别名 `dsh-quick-chat.tgz`（给 `releases/latest/download` 用）和 `SHA256SUMS.txt`；`--dry-run` 只打印并校验文件清单。
@@ -22,10 +25,16 @@
 - **安装章节只留两条路**：删掉「装成本地插件目录」与「设置 → 插件 → 添加本地插件」两段手装流程，以及卸载里对应的手动清理说明——预构建包、仓库、插件市场三条已经覆盖所有情况。
 - **署名改为 `lrhero`**：README 许可行、`LICENSE`、`package.json` 的 `author` 不再写真实姓名与邮箱。
 - **示意图改用 A / B 命名**：`docs/bar.png` 左侧标签 `正经版` / `整活版` → `A 版` / `B 版`，右侧按钮 `整活` / `正经` → `切换`（B 行蓝色、A 行黑色）；README 正文与 `cordis.patch.yml` 注释同步改用 A 版 / B 版，配置值仍是 `proper` / `fun`。
+- **首图重画成真实工具栏**：`docs/bar.png` 删掉那个并不存在的「切换」文字按钮和自造的 `chat.deepseek.com` 地址，改成插件真正的控件——硬币（A 版冠面 / B 版带电面）+ 配色点（A 版）/ 喇叭（B 版）+ 分隔线 + ↗ ⟳ ×；底部说明随之改成「橙圈 = 硬币开关」。
+- **README 补 403 排查**：已知限制写清「guest 跟随系统代理」，排查一节给出直连 / 走代理两条 `curl` 命令和一张判定表。
+
+### 修复
+
+- **被 CloudFront 拒绝时给出可操作提示**：原来只有一张 `403 ERROR / Request blocked`，现在面板直接说明原因与改法。
 
 ### 验证
 
-- `node test/smoke.mjs` → 22 项断言全绿
+- `node test/smoke.mjs` → 23 项断言全绿
 - `node test/package.mjs` → 11 项断言全绿
 - `node tools/pack.mjs --dry-run` → tarball 文件清单正确
 

@@ -36,6 +36,15 @@ window.__ModuleLoader__.load({
       return spec.trim(); // 直接给完整 UA 字符串
     }
 
+    // CloudFront 的拦截页不会触发 did-fail-load：页面本身「加载成功」了，只是内容是
+    // 一个 403。所以只能把标题/正文读回来认领它，好给出「多半是代理」这种能立刻
+    // 行动的提示，而不是让用户对着一张 ERROR 页发呆。
+    function isCloudFrontBlock(title, body) {
+      const haystack = `${title ?? ''}\n${body ?? ''}`;
+      if (!/the request could not be satisfied/i.test(haystack)) return false;
+      return /cloudfront|request blocked/i.test(haystack);
+    }
+
     const GLYPHS = {
       // One visual language for all three: solid fill, currentColor, 24 grid.
       deepseek: {
@@ -148,6 +157,8 @@ window.__ModuleLoader__.load({
         external: '在系统浏览器打开',
         refresh: '刷新当前页面',
         ua: '实际 UA',
+        blocked:
+          '站点返回 403（CloudFront 拒绝了这个请求），最可能是系统代理的出口 IP 被限制：把该域名加进代理的直连规则（或设成 DIRECT）后点 ⟳ 刷新。',
         tintLabel: { white: '白色', blue: '浅色（蓝）', black: '深色（黑）', auto: '动态（跟随主题）', grad: '渐变色（蓝→青）' },
       },
       en: {
@@ -166,6 +177,8 @@ window.__ModuleLoader__.load({
         external: 'Open in your browser',
         refresh: 'Reload this page',
         ua: 'Live UA',
+        blocked:
+          'The site answered 403 (CloudFront refused the request). The usual cause is the system proxy exit IP being blocked: add this domain to the proxy bypass list (or set it to DIRECT), then press ⟳ to reload.',
         tintLabel: { white: 'White', blue: 'Light (blue)', black: 'Dark (black)', auto: 'Adaptive (follow theme)', grad: 'Gradient (blue → cyan)' },
       },
     }[LANG];
@@ -1014,7 +1027,7 @@ window.__ModuleLoader__.load({
       // switching providers does not reload the page.
       const bootGuest = (site) => {
         if (bridge === null || site === undefined || viewsRef.current.has(site.id)) return;
-        const entry = { el: null, lease: null, ready: false, error: '' };
+        const entry = { el: null, lease: null, ready: false, blocked: false, error: '' };
         viewsRef.current.set(site.id, entry);
         void (async () => {
           try {
@@ -1048,6 +1061,30 @@ window.__ModuleLoader__.load({
             el.addEventListener('did-fail-load', (event) => {
               if (!event.isMainFrame || event.errorCode === -3) return;
               entry.error = `${event.errorDescription || 'load failed'} (${event.errorCode})`;
+              bump();
+            });
+            // A blocked request still "loads", so ask the guest what it ended up on.
+            const inspectLoad = () => {
+              try {
+                el.executeJavaScript(
+                  '(() => { const t = document.title || ""; const b = document.body ? String(document.body.innerText || "") : ""; return { t, b: b.slice(0, 600) }; })()',
+                )
+                  .then((probe) => {
+                    const blocked = isCloudFrontBlock(probe?.t, probe?.b);
+                    if (blocked !== entry.blocked) {
+                      entry.blocked = blocked;
+                      bump();
+                    }
+                  })
+                  .catch(() => {});
+              } catch {
+                /* guest gone */
+              }
+            };
+            el.addEventListener('did-stop-loading', inspectLoad);
+            el.addEventListener('did-start-loading', () => {
+              if (!entry.blocked) return;
+              entry.blocked = false;
               bump();
             });
             entry.el = el;
@@ -1437,9 +1474,11 @@ window.__ModuleLoader__.load({
                         }
                       },
                     },
-                    viewsRef.current.get(site.id)?.error
-                      ? h('div', { className: 'dshqc-note' }, viewsRef.current.get(site.id).error)
-                      : null,
+                    viewsRef.current.get(site.id)?.blocked
+                      ? h('div', { className: 'dshqc-note' }, t.blocked)
+                      : viewsRef.current.get(site.id)?.error
+                        ? h('div', { className: 'dshqc-note' }, viewsRef.current.get(site.id).error)
+                        : null,
                   ),
                 ),
           ),
@@ -1453,7 +1492,7 @@ window.__ModuleLoader__.load({
       // 整个插件会静默地不激活（按钮、抽屉全都没有），排查时毫无线索。
       inject: ['slots'],
       // 仅供离线自检调用，宿主不会读这两个字段
-      internals: { pushMarginFor, contrastInk, parseColor, lang: LANG, text: TEXT },
+      internals: { pushMarginFor, contrastInk, parseColor, isCloudFrontBlock, lang: LANG, text: TEXT },
       apply(ctx, config) {
         // 诊断：apply 到底有没有跑到、哪些席位注册成功。只写一条很小的记录，
         // 下次再出现「整排图标消失」，一眼能分清是插件没加载还是宿主没渲染。
