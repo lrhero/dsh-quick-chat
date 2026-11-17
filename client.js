@@ -824,7 +824,7 @@ window.__ModuleLoader__.load({
       const state = React.useSyncExternalStore(store.subscribe, store.get, store.get);
       const variant = state.iconStyle === 'fun' ? 'fun' : 'proper';
       const isDark = useIsDark();
-      const ink = variant === 'fun' ? undefined : resolveInk(normalizeTint(state.iconColor) ?? 'blue', isDark);
+      const ink = variant === 'fun' ? undefined : resolveInk(normalizeTint(state.iconColor) ?? 'grad', isDark);
       const [spot, setSpot] = React.useState(null);
 
       React.useEffect(() => {
@@ -1003,7 +1003,7 @@ window.__ModuleLoader__.load({
       const active = state.active ?? (sources[0]?.id ?? null);
       // 样式和颜色都放在 store 里，切换时头部图标与抽屉同步更新。
       const variant = state.iconStyle === 'fun' ? 'fun' : 'proper';
-      const tint = normalizeTint(state.iconColor) ?? 'blue';
+      const tint = normalizeTint(state.iconColor) ?? 'grad';
       const isDark = useIsDark();
       const ink = variant === 'fun' ? undefined : resolveInk(tint, isDark);
 
@@ -1602,12 +1602,12 @@ window.__ModuleLoader__.load({
         // 首次安装没有配置也没有本地记录时用蓝色（白/黑在某些底色上会隐形），
         // 其余档位通过 iconColor 或抽屉里的色点切换。
         const configuredStyle = config?.iconStyle === 'fun' ? 'fun' : 'proper';
-        const configuredTint = normalizeTint(config?.iconColor) ?? 'blue';
+        const configuredTint = normalizeTint(config?.iconColor) ?? 'grad';
         const initialStyle = readStoredStyle() ?? configuredStyle;
         // 当前底色下不提供的那一档（浅底的白 / 深底的黑）不进选择链；
         // 存在本地或写进配置的旧值如果正好是它，就退回默认蓝，避免一进来就隐形。
         const usableTint = (value) => (availableTints(bodyIsDark()).includes(value) ? value : null);
-        const initialTint = usableTint(readStoredTint()) ?? usableTint(configuredTint) ?? 'blue';
+        const initialTint = usableTint(readStoredTint()) ?? usableTint(configuredTint) ?? 'grad';
         const rawVolume = Number(config?.voiceVolume);
         const volume = Number.isFinite(rawVolume) ? Math.min(1, Math.max(0, rawVolume)) : 0.7;
         const playVoice = makeVoicePlayer(normalizeVoices(config), volume);
@@ -1704,13 +1704,13 @@ window.__ModuleLoader__.load({
           const state = React.useSyncExternalStore(props.store.subscribe, props.store.get, props.store.get);
           const style = state.iconStyle === 'fun' ? 'fun' : 'proper';
           const isDark = useIsDark();
-          const ink = style === 'fun' ? undefined : resolveInk(normalizeTint(state.iconColor) ?? 'blue', isDark);
+          const ink = style === 'fun' ? undefined : resolveInk(normalizeTint(state.iconColor) ?? 'grad', isDark);
           // 席位到底有没有被宿主渲染？渲染了就留一条记录：有记录却没有按钮，
           // 说明是渲染后的事（被裁/被盖/颜色），没有记录说明席位根本没挂。
           React.useEffect(() => {
             if (typeof props.report === 'function') props.report({ event: 'header-mount' });
           }, []);
-          return h(SourceButtons, { sources: props.sources, state, onPick: pickSite, variant: style, ink, tint: normalizeTint(state.iconColor) ?? 'blue' });
+          return h(SourceButtons, { sources: props.sources, state, onPick: pickSite, variant: style, ink, tint: normalizeTint(state.iconColor) ?? 'grad' });
         };
 
         // 先装守卫：即使头部席位注册失败或宿主不渲染它，按钮也还有地方落

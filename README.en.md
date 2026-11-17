@@ -27,7 +27,7 @@ The main process's `will-attach-webview` only validates the lease owner and the 
 | **The main UI makes room** | The conversation actually narrows instead of being covered; drag the drawer's left edge and it follows |
 | **Draggable width** | 360px up to window width − 90px, remembered locally |
 | **Two icon sets** | Vector glyphs, or illustrated avatars |
-| **Colours that fit the background** | Blue (default) / white / black / follow theme / blue→cyan gradient; white is hidden on a light background and black on a dark one, so it is really four options |
+| **Colours that fit the background** | Blue→cyan gradient (default) / white / blue / black / follow theme; white is hidden on a light background and black on a dark one, so it is really four options |
 | **Coin switch** | A silver coin: crown side = vector glyphs, lightning side = illustrated avatars, click to flip |
 | **Click sounds** | One clip per vendor, played on open; a speaker button mutes them |
 | **Self-healing icons** | If the host remounts or hides the header seat, a guard notices within ~2s and re-hosts the buttons at the header's right edge |
@@ -100,7 +100,7 @@ The bundle's own `cordis.patch.yml` already inserts the default row (three vendo
 | `sources[].surface` | `webview` | `tab` hands the page to the host's own browser tab |
 | `sources[].userAgent` | desktop Chrome | `chrome` / `electron` / a full UA string |
 | `iconStyle` | `proper` | `proper` = vector glyphs; `fun` = illustrated avatars (with sounds) |
-| `iconColor` | `blue` | `blue` (the first-install default) / `white` / `black` / `auto` (follow theme) / `grad`. White is not offered on a light background and black is not offered on a dark one (a config value for them falls back to `blue`); white keeps its contrast fallback |
+| `iconColor` | `grad` | `grad` (the first-install default, blue→cyan) / `blue` / `white` / `black` / `auto` (follow theme). White is not offered on a light background and black is not offered on a dark one (a config value for them falls back to `grad`); white keeps its contrast fallback |
 | `voiceVolume` | `0.7` | Click-sound volume, 0–1 |
 | `voiceEnabled` | `true` | Play click sounds; the speaker button in the drawer overrides it locally |
 | `voices` | empty | Per-id sound overrides as data URI or http(s) URL |

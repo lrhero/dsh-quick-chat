@@ -234,12 +234,13 @@ if (order[order.length - 2] !== 'dshqc-refresh') throw new Error('刷新应紧�
 if (order.includes('dshqc-backdrop')) throw new Error('不应再有遮罩层');
 console.log('smoke ok: bar tools pinned (proper: coin / tint / close)');
 
-// Icons are inline glyphs painted with the resolved ink colour (default: blue).
+// Icons are inline glyphs painted with the resolved ink colour (default: gradient).
 const glyph = deepFind(pills[0], (n) => n?.type === 'svg');
 if (!glyph) throw new Error('provider pill has no svg glyph');
-if (deepFind(glyph, (n) => n?.type === 'path' && n?.props?.fill === '#2f6bff') === null) {
-    throw new Error('首次安装（无 iconColor 配置）图标应为蓝色（#2f6bff）');
+if (deepFind(glyph, (n) => n?.type === 'path' && n?.props?.fill === 'url(#dshqc-ink-grad)') === null) {
+    throw new Error('首次安装（无 iconColor 配置）图标应为渐变（url(#dshqc-ink-grad)）');
 }
+if (!deepFind(glyph, (n) => n?.type === 'linearGradient')) throw new Error('默认渐变缺少 linearGradient 定义');
 
 // No extra chat UI: the site renders its own composer.
 for (const forbidden of ['dshqc-input', 'dshqc-send', 'dshqc-zone', 'dshqc-chip']) {
@@ -403,8 +404,8 @@ console.log('smoke ok: drawer has a drag handle');
 if (headerProps.store.get().iconStyle !== 'proper') {
     throw new Error(`默认应为 proper，实际 ${headerProps.store.get().iconStyle}`);
 }
-if (headerProps.store.get().iconColor !== 'blue') {
-    throw new Error(`默认颜色应为 blue，实际 ${headerProps.store.get().iconColor}`);
+if (headerProps.store.get().iconColor !== 'grad') {
+    throw new Error(`默认颜色应为 grad，实际 ${headerProps.store.get().iconColor}`);
 }
 
 // 换成蓝色配置，glyph 必须用蓝色描边
@@ -554,12 +555,12 @@ console.log('smoke ok: iconColor=blue paints the glyphs blue');
         return seat.definition.inject();
     };
 
-    // 浅色主题（body 上没有 data-ds-dark-theme）：配置里的 white 这一档不存在，退回默认蓝
+    // 浅色主题（body 上没有 data-ds-dark-theme）：配置里的 white 这一档不存在，退回默认渐变
     const whiteOnLight = headerFor('white');
-    if (whiteOnLight.store.get().iconColor !== 'blue') {
-        throw new Error(`浅色主题下 white 应退回 blue，实际 ${whiteOnLight.store.get().iconColor}`);
+    if (whiteOnLight.store.get().iconColor !== 'grad') {
+        throw new Error(`浅色主题下 white 应退回 grad，实际 ${whiteOnLight.store.get().iconColor}`);
     }
-    console.log('smoke ok: white is not offered on a light theme, the config falls back to blue');
+    console.log('smoke ok: white is not offered on a light theme, the config falls back to the default');
 
     // 纯函数：白色的对比度兜底仍然在
     const { contrastInk } = plugin.internals;
