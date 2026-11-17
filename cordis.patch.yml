@@ -9,8 +9,8 @@
       config:
         # proper = A 版（矢量图标）；fun = B 版（头像 + 点击音效）
         iconStyle: proper
-        # 图标颜色：white（默认）/ blue / black / auto（跟随主题）
-        iconColor: white
+        # 图标颜色：blue（默认，首次安装用的就是它）/ white / black / auto（跟随主题）/ grad
+        iconColor: blue
         # 点击音效开关（界面上的喇叭按钮也能切）
         voiceEnabled: true
         # B 版音效音量 0~1

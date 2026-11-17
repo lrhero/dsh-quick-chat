@@ -234,11 +234,11 @@ if (order[order.length - 2] !== 'dshqc-refresh') throw new Error('刷新应紧�
 if (order.includes('dshqc-backdrop')) throw new Error('不应再有遮罩层');
 console.log('smoke ok: bar tools pinned (proper: coin / tint / close)');
 
-// Icons are inline glyphs painted with the resolved ink colour (default: white).
+// Icons are inline glyphs painted with the resolved ink colour (default: blue).
 const glyph = deepFind(pills[0], (n) => n?.type === 'svg');
 if (!glyph) throw new Error('provider pill has no svg glyph');
-if (deepFind(glyph, (n) => n?.type === 'path' && n?.props?.fill === '#ffffff') === null) {
-    throw new Error('默认图标应为白色（#ffffff）');
+if (deepFind(glyph, (n) => n?.type === 'path' && n?.props?.fill === '#2f6bff') === null) {
+    throw new Error('首次安装（无 iconColor 配置）图标应为蓝色（#2f6bff）');
 }
 
 // No extra chat UI: the site renders its own composer.
@@ -403,8 +403,8 @@ console.log('smoke ok: drawer has a drag handle');
 if (headerProps.store.get().iconStyle !== 'proper') {
     throw new Error(`默认应为 proper，实际 ${headerProps.store.get().iconStyle}`);
 }
-if (headerProps.store.get().iconColor !== 'white') {
-    throw new Error(`默认颜色应为 white，实际 ${headerProps.store.get().iconColor}`);
+if (headerProps.store.get().iconColor !== 'blue') {
+    throw new Error(`默认颜色应为 blue，实际 ${headerProps.store.get().iconColor}`);
 }
 
 // 换成蓝色配置，glyph 必须用蓝色描边

@@ -808,7 +808,7 @@ window.__ModuleLoader__.load({
       const state = React.useSyncExternalStore(store.subscribe, store.get, store.get);
       const variant = state.iconStyle === 'fun' ? 'fun' : 'proper';
       const isDark = useIsDark();
-      const ink = variant === 'fun' ? undefined : resolveInk(normalizeTint(state.iconColor) ?? 'white', isDark);
+      const ink = variant === 'fun' ? undefined : resolveInk(normalizeTint(state.iconColor) ?? 'blue', isDark);
       const [spot, setSpot] = React.useState(null);
 
       React.useEffect(() => {
@@ -987,7 +987,7 @@ window.__ModuleLoader__.load({
       const active = state.active ?? (sources[0]?.id ?? null);
       // 样式和颜色都放在 store 里，切换时头部图标与抽屉同步更新。
       const variant = state.iconStyle === 'fun' ? 'fun' : 'proper';
-      const tint = normalizeTint(state.iconColor) ?? 'white';
+      const tint = normalizeTint(state.iconColor) ?? 'blue';
       const isDark = useIsDark();
       const ink = variant === 'fun' ? undefined : resolveInk(tint, isDark);
 
@@ -1583,9 +1583,10 @@ window.__ModuleLoader__.load({
         };
         const sources = normalizeSources(config);
         // 头像样式与颜色：config 给初值，界面上切换过就以本地存的为准。
-        // 默认正经版 + 白色；其余三档通过 iconColor 或抽屉里的色点切换。
+        // 首次安装没有配置也没有本地记录时用蓝色（白/黑在某些底色上会隐形），
+        // 其余档位通过 iconColor 或抽屉里的色点切换。
         const configuredStyle = config?.iconStyle === 'fun' ? 'fun' : 'proper';
-        const configuredTint = normalizeTint(config?.iconColor) ?? 'white';
+        const configuredTint = normalizeTint(config?.iconColor) ?? 'blue';
         const initialStyle = readStoredStyle() ?? configuredStyle;
         const initialTint = readStoredTint() ?? configuredTint;
         const rawVolume = Number(config?.voiceVolume);
@@ -1684,7 +1685,7 @@ window.__ModuleLoader__.load({
           const state = React.useSyncExternalStore(props.store.subscribe, props.store.get, props.store.get);
           const style = state.iconStyle === 'fun' ? 'fun' : 'proper';
           const isDark = useIsDark();
-          const ink = style === 'fun' ? undefined : resolveInk(normalizeTint(state.iconColor) ?? 'white', isDark);
+          const ink = style === 'fun' ? undefined : resolveInk(normalizeTint(state.iconColor) ?? 'blue', isDark);
           // 席位到底有没有被宿主渲染？渲染了就留一条记录：有记录却没有按钮，
           // 说明是渲染后的事（被裁/被盖/颜色），没有记录说明席位根本没挂。
           React.useEffect(() => {

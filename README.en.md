@@ -27,7 +27,7 @@ The main process's `will-attach-webview` only validates the lease owner and the 
 | **The main UI makes room** | The conversation actually narrows instead of being covered; drag the drawer's left edge and it follows |
 | **Draggable width** | 360px up to window width − 90px, remembered locally |
 | **Two icon sets** | Vector glyphs, or illustrated avatars |
-| **Five colour schemes** | White / blue / black / follow theme / blue→cyan gradient |
+| **Five colour schemes** | Blue (default) / white / black / follow theme / blue→cyan gradient |
 | **Coin switch** | A silver coin: crown side = vector glyphs, lightning side = illustrated avatars, click to flip |
 | **Click sounds** | One clip per vendor, played on open; a speaker button mutes them |
 | **Self-healing icons** | If the host remounts or hides the header seat, a guard notices within ~2s and re-hosts the buttons at the header's right edge |
@@ -100,7 +100,7 @@ The bundle's own `cordis.patch.yml` already inserts the default row (three vendo
 | `sources[].surface` | `webview` | `tab` hands the page to the host's own browser tab |
 | `sources[].userAgent` | desktop Chrome | `chrome` / `electron` / a full UA string |
 | `iconStyle` | `proper` | `proper` = vector glyphs; `fun` = illustrated avatars (with sounds) |
-| `iconColor` | `white` | `white` / `blue` / `black` / `auto` (follow theme) / `grad`; the rendered ink falls back to a contrasting colour when needed |
+| `iconColor` | `blue` | `blue` (the first-install default) / `white` / `black` / `auto` (follow theme) / `grad`; the rendered ink falls back to a contrasting colour when needed |
 | `voiceVolume` | `0.7` | Click-sound volume, 0–1 |
 | `voiceEnabled` | `true` | Play click sounds; the speaker button in the drawer overrides it locally |
 | `voices` | empty | Per-id sound overrides as data URI or http(s) URL |
