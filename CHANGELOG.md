@@ -31,6 +31,7 @@
 - **首图文件改名为 `docs/hero-drawer.png`**：README、`screenshots.json` 与两个重绘脚本同步更新。旧名 `docs/bar.png` 不再使用——同名旧文件容易被预览器缓存成上一版，换一个文件名可以彻底绕开。
 - **市场截图去掉过期的那张**：`drawer-width.png` 是旧版顶栏（右侧还有一个文字项），已从 `screenshots.json` 移除，现在只展示 `bar` / `icon-sets` / `coin` 三张。
 - **描述里的配色数量校正**：`locale` 中英与市场条目原来写「五种配色 / five colour schemes」，实际是随底色收敛的四种（默认渐变），已改。
+- **README 安装说明标明 npm 同名包不是本项目**：`dsh-quick-chat` 在 npm 上已被别人占用，安装只走 GitHub 预构建包 / 仓库两条命令，避免有人 `dsh plugin add dsh-quick-chat` 装错。
 - **README 补 403 排查**：已知限制写清「guest 跟随系统代理」，排查一节给出直连 / 走代理两条 `curl` 命令和一张判定表。
 
 ### 修复

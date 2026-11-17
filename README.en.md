@@ -53,6 +53,8 @@ Replace `desktop` with your profile name, then restart Harness. The plugin shows
 
 > In **DSH Desktop** the profile is managed by the app, so `dsh plugin` may install into `profiles/<name>` rather than the one the desktop app actually uses. Install through **Settings → Plugins** in that case.
 
+> ⚠️ **The `dsh-quick-chat` package on npm is not this plugin.** The name was taken first (`youxia2026` publishes a different package under it), so this project does not publish to npm — use the two commands above. `dsh plugin add dsh-quick-chat` installs someone else's package.
+
 ### Plugin market
 
 Search `Quick Chat` on the Plugins page's **Discover** tab and install from the card. First listing usually lands within a day of the entry being merged; if it does not show up, point the index source at `https://cdn.jsdelivr.net/npm/dsh-plugin-catalog/index.json` (see [docs/PUBLISHING.md](docs/PUBLISHING.md) for the listing process).

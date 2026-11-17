@@ -55,6 +55,8 @@ dsh plugin --profile desktop add github:lrhero/dsh-quick-chat
 
 > 在 **DSH Desktop** 里 profile 由应用托管，`dsh plugin` 可能装进 `profiles/<name>` 而不是桌面端实际使用的那一份——桌面端直接在 **设置 → 插件** 里安装即可。
 
+> ⚠️ **npm 上那个 `dsh-quick-chat` 不是这个插件。** 名字被别人先占了（`youxia2026` 的同名包），所以本项目不发布 npm、请用上面两条命令安装；`dsh plugin add dsh-quick-chat` 装到的是别人的包。
+
 ### 方式 B：插件市场
 
 插件页的 **发现（Discover）** 页签里搜 `Quick Chat`，点卡片上的安装即可。首次收录通常在上架后一天内；刷不到时把索引源换成 `https://cdn.jsdelivr.net/npm/dsh-plugin-catalog/index.json`（上架与发布流程见 [docs/PUBLISHING.md](docs/PUBLISHING.md)）。
